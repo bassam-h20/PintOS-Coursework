@@ -28,15 +28,33 @@ static bool load (const char *cmdline, void (**eip) (void), void **esp);
 tid_t
 process_execute (const char *file_name) 
 {
+  //char *original = file_name;
+  
   char *fn_copy;
+  //char *save_ptr;
   tid_t tid;
-
+  //const char *token[] = {};
+  //int i = 0;
+  
   /* Make a copy of FILE_NAME.
      Otherwise there's a race between the caller and load(). */
-  fn_copy = palloc_get_page (0);
+  fn_copy = palloc_get_page (0); //uncomment if error given
+
+  strlcpy (fn_copy, file_name, PGSIZE);
+  /*for (fn_copy = strtok_r(original, " ", &save_ptr); fn_copy != NULL; fn_copy = strtok_r(NULL, " ", &save_ptr))
+  {
+    token[i] = (char *)fn_copy;
+    //fn_copy = palloc_get_page (0);
+    i++;
+  }
+  */
+  //fn_copy = palloc_get_page (0);
+  
+  
   if (fn_copy == NULL)
     return TID_ERROR;
-  strlcpy (fn_copy, file_name, PGSIZE);
+  //strlcpy(dst, src, size)
+  
 
   /* Create a new thread to execute FILE_NAME. */
   tid = thread_create (file_name, PRI_DEFAULT, start_process, fn_copy);
@@ -46,25 +64,105 @@ process_execute (const char *file_name)
   return tid;
 }
 
+//passing arg v5 - Final Version
+
+static void
+passing_arg(int argc, char **argv, void **esp)
+{
+  int i, j, len;
+  int word_align;
+  char *addr[argc];
+
+  //for loop
+  for (i = argc - 1; i >= 0; i--) 
+  {
+    len = strlen(argv[i]) + 1;
+    *esp -= len;
+    memcpy(*esp, argv[i], len);
+    addr[i] = *esp;
+  }
+
+  word_align = (uintptr_t)*esp % 4;
+  *esp -= word_align;
+  memset(*esp, 0, word_align);
+
+  *esp -= 4;
+  memset(*esp, 0, 4);
+
+  for (j = argc - 1; j >= 0; j--) 
+  {
+    *esp -= sizeof(char*);
+    memcpy(*esp, &addr[j], sizeof(char*));
+  }
+
+  char **esp_addr = *esp;
+  *esp -= sizeof(char**);
+  memcpy(*esp, &esp_addr, sizeof(char**));
+
+  *esp -= sizeof(int);
+  memcpy(*esp, &argc, sizeof(int));
+
+  *esp -= sizeof(int);
+  memset(*esp, 0, sizeof(int));
+}
+
+
 /* A thread function that loads a user process and starts it
    running. */
 static void
 start_process (void *file_name_)
 {
-  char *file_name = file_name_;
+  printf("\nstart process function intiated\n");
+  int argc = 0;
+  
+  
+  char *file_name;
+  file_name = palloc_get_page(0);
+  strlcpy(file_name, file_name_, PGSIZE);
+  
   struct intr_frame if_;
   bool success;
-
+  
+  char *fn_copy;
+  char *save_ptr;
+  //to get count of argc
+  for (fn_copy = strtok_r(file_name_, " ", &save_ptr); fn_copy != NULL; fn_copy = strtok_r(NULL, " ", &save_ptr))
+  {
+    argc++;
+  }
+  const char *token[argc];
+  int i = 0;
+  
+  
+  //hex_dump( if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
+  
+  for (fn_copy = strtok_r(file_name, " ", &save_ptr); fn_copy != NULL; fn_copy = strtok_r(NULL, " ", &save_ptr))
+  {
+    token[i] = fn_copy;
+    printf("'%s' ", token[i]);
+    //fn_copy = palloc_get_page (0);
+    i++;
+  }
+  
   /* Initialize interrupt frame and load executable. */
   memset (&if_, 0, sizeof if_);
   if_.gs = if_.fs = if_.es = if_.ds = if_.ss = SEL_UDSEG;
   if_.cs = SEL_UCSEG;
   if_.eflags = FLAG_IF | FLAG_MBS;
 
-  success = load (file_name, &if_.eip, &if_.esp);
+  
+  success = load (file_name_, &if_.eip, &if_.esp);
+
+  passing_arg(i, token, &if_.esp); 
+  printf("\n\npassing_arg() successful.\n");
+  printf("\nhexdump: \n");
+  hex_dump( if_.esp, if_.esp, (PHYS_BASE - if_.esp), true );
+  printf("\n\n");
+  palloc_free_page (file_name_);
+  
   
   /* If load failed, quit. */
-  palloc_free_page (file_name);
+  
   if (!success) 
     thread_exit ();
 
@@ -75,6 +173,8 @@ start_process (void *file_name_)
      we just point the stack pointer (%esp) to our stack frame
      and jump to it. */
   asm volatile ("movl %0, %%esp; jmp intr_exit" : : "g" (&if_) : "memory");
+  
+  printf("\nright before NOT_REACHED()\n");
   NOT_REACHED ();
 }
 
@@ -91,8 +191,7 @@ int
 process_wait (tid_t child_tid UNUSED) 
 {
     // FIXME: @bgaster --- quick hack to make sure processes execute!
-  for(;;) ;
-    
+  for(;;);
   return -1;
 }
 
@@ -108,16 +207,18 @@ process_exit (void)
   pd = cur->pagedir;
   if (pd != NULL) 
     {
-      /* Correct ordering here is crucial.  We must set
+        /* Correct ordering here is crucial.  We must set * 
          cur->pagedir to NULL before switching page directories,
          so that a timer interrupt can't switch back to the
          process page directory.  We must activate the base page
          directory before destroying the process's page
          directory, or our active page directory will be one
          that's been freed (and cleared). */
+      //exit_code = 0;
       cur->pagedir = NULL;
       pagedir_activate (NULL);
       pagedir_destroy (pd);
+      //printf("%s, exit code: %d", file_name, exit_code); /*HERE*/
     }
 }
 

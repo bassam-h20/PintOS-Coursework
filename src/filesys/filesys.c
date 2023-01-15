@@ -82,12 +82,21 @@ filesys_open (const char *name)
    or if an internal memory allocation fails. */
 bool
 filesys_remove (const char *name) 
-{
+{ 
   struct dir *dir = dir_open_root ();
+  
   bool success = dir != NULL && dir_remove (dir, name);
+  
   dir_close (dir); 
-
+  
+  printf("\nfilesys.c: return value: %d\n", success);
+  
+  if(success == 0)
+  {
+    printf("filesys.c: Removal failed");
+  }
   return success;
+  
 }
 
 /* Formats the file system. */

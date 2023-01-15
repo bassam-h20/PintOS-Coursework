@@ -2,13 +2,10 @@
 #include <syscall.h>
 
 int
-main (int argc, char **argv)
+main(int argc, char **argv)
 {
-    int i,j;
-
+  int i;
   for (i = 0; i < argc; i++)
-    printf ("%s ", argv[i]);
-  printf ("\n");
-
+    {printf ("%s", argv[i]); }
   return EXIT_SUCCESS;
 }

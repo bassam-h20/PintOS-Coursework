@@ -194,7 +194,10 @@ dir_remove (struct dir *dir, const char *name)
 
   /* Find directory entry. */
   if (!lookup (dir, name, &e, &ofs))
-    goto done;
+    {
+      printf("\nfile has not been located in directory.\n");
+      goto done;
+    }
 
   /* Open inode. */
   inode = inode_open (e.inode_sector);
