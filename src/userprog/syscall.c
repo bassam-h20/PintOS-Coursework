@@ -82,7 +82,7 @@ syscall_handler (struct intr_frame *f )
     { 
       //pointer is made to point at buffer + 4 due to word-alignment of bytes
       char *file =  (*(char**)(f->esp+ 4));
-      unsigned initial_size = (*(unsigned*) (f->esp + 8));
+      
 
       //validating if user virtual address lies within PHYS_BASE range of user virtual address space
       //validating user-provided pointer address and if file name is NULL
@@ -94,6 +94,7 @@ syscall_handler (struct intr_frame *f )
         break;
       }
       
+      unsigned initial_size = (*(unsigned*) (f->esp + 8));
 
       f->eax = filesys_create(file, initial_size) ;
       break;  
@@ -147,7 +148,7 @@ syscall_handler (struct intr_frame *f )
       thread_exit();
     }
   
-  
+
   }
 
   
