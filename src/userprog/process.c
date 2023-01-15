@@ -66,7 +66,26 @@ process_execute (const char *file_name)
 
 //passing arg v5 - Final Version
 
+//pintos official documentation
+//Pfaff , B. (2009) PintOS. Pintos Projects. [online]. Available from: https://web.stanford.edu/class/cs140/projects/pintos/pintos_1.html [Accessed 24 October 2022]. 
+
+//Pintos Guide - Reference
+//Sher, S.T.-H. (2018) CSCI 350: Pintos Guide. 
+//Available from: https://static1.squarespace.com/static/5b18aa0955b02c1de94e4412/t/5b85fad2f950b7b16b7a2ed6/1535507195196/Pintos+Guide [Accessed 24 October 2022]. 
+
+//memset reference
+//Khan, M., I.(2021) memset() in C with examples. Available from: https://www.geeksforgeeks.org/memset-c-example/ [Accessed 24 November 2022]
+
+//memcpy reference
+//tutorialspoint. C library function - memcpy(). Available from: https://www.tutorialspoint.com/c_standard_library/c_function_memcpy.htm# [Accessed 7 November 2022]
 static void
+
+//youtube video reference
+//Sorber, J. (2019) How arguments are passed to functions in C (and most other languages). Youtube[video]. 26 August. Available from: https://www.youtube.com/watch?v=MCVa1ZhQaqI [27 October 2022]
+
+//strtok_r reference
+//Khan, M. I. (2022) strtok() and strtok_r() functions in C with examples. Available from: https://www.geeksforgeeks.org/strtok-strtok_r-functions-c-examples/ [Accessed 2 December 2022]
+
 passing_arg(int argc, char **argv, void **esp)
 {
   int i, j, len;
