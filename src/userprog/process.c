@@ -73,35 +73,42 @@ passing_arg(int argc, char **argv, void **esp)
   int word_align;
   char *addr[argc];
 
-  //for loop
+  //for loop to pass arguments to the stack pointer
+  //set a variable for length of argument
+  //writing each argument and exectuable in reverse order to the stack
+  //saving pointer addresses in addr array
   for (i = argc - 1; i >= 0; i--) 
   {
-    len = strlen(argv[i]) + 1;
-    *esp -= len;
+    len = strlen(argv[i]) + 1; 
+    *esp -= len; 
     memcpy(*esp, argv[i], len);
     addr[i] = *esp;
   }
 
+  //aligning to 4 bytes using 0's
   word_align = (uintptr_t)*esp % 4;
   *esp -= word_align;
   memset(*esp, 0, word_align);
-
   *esp -= 4;
   memset(*esp, 0, 4);
 
+  //writing addresses that point to each argument
   for (j = argc - 1; j >= 0; j--) 
   {
     *esp -= sizeof(char*);
     memcpy(*esp, &addr[j], sizeof(char*));
   }
 
+  //storing current esp addresss
   char **esp_addr = *esp;
   *esp -= sizeof(char**);
   memcpy(*esp, &esp_addr, sizeof(char**));
 
+  //writing number of arguments over 4 bytes
   *esp -= sizeof(int);
   memcpy(*esp, &argc, sizeof(int));
 
+  //null pointer
   *esp -= sizeof(int);
   memset(*esp, 0, sizeof(int));
 }
@@ -125,17 +132,19 @@ start_process (void *file_name_)
   
   char *fn_copy;
   char *save_ptr;
-  //to get count of argc
+
+  //to get count of argc for the size of the *token[] array
   for (fn_copy = strtok_r(file_name_, " ", &save_ptr); fn_copy != NULL; fn_copy = strtok_r(NULL, " ", &save_ptr))
   {
     argc++;
   }
+
   const char *token[argc];
   int i = 0;
   
   
-  //hex_dump( if_.esp, if_.esp, PHYS_BASE - if_.esp, true);
-  
+  //parsing the file_name and delimitting the white spaces using strtok_r 
+  //this is done also to give access to the file name for other functions
   for (fn_copy = strtok_r(file_name, " ", &save_ptr); fn_copy != NULL; fn_copy = strtok_r(NULL, " ", &save_ptr))
   {
     token[i] = fn_copy;
@@ -153,8 +162,15 @@ start_process (void *file_name_)
   
   success = load (file_name_, &if_.eip, &if_.esp);
 
+  //arguments taken in start_process are passed into the passing_arg function in order to be parsed
+  //i used as an index counter for the token array(argument array)
+  //token is the array of arguments taken by the user
+  //&if_.esp being the stack pointer
   passing_arg(i, token, &if_.esp); 
   printf("\n\npassing_arg() successful.\n");
+
+
+  //checking arguments are passed properly onto the stack
   printf("\nhexdump: \n");
   hex_dump( if_.esp, if_.esp, (PHYS_BASE - if_.esp), true );
   printf("\n\n");
