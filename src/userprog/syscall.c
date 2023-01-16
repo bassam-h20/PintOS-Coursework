@@ -47,7 +47,7 @@ syscall_handler (struct intr_frame *f )
 {
 
   int sys_code = *(int*)f -> esp;
-  printf("\nSys Number: %d\n", sys_code);
+  printf("\nSys Number: %d\n\n", sys_code);
 
   switch(sys_code)
   {
@@ -98,10 +98,23 @@ syscall_handler (struct intr_frame *f )
         break;
       }
       
-      
 
       f->eax = filesys_create(file, initial_size) ;
-      break;  
+
+      if (filesys_create(file, initial_size) == true)
+      {
+        printf("\nfile: '%s' created successfully\n", file);
+        f -> eax = false;
+        break;
+      }
+      if(filesys_create(file, initial_size) == false)
+      {
+        printf("\nError occured file either already exists, or internal memory allocation failed\n");
+        f -> eax = false;
+        break;
+      }
+      
+        
     }
 
 
@@ -123,26 +136,22 @@ syscall_handler (struct intr_frame *f )
         printf("\nError occured, pointer address invalid or file name is null\n");
         break;
       }
-      
+
+      printf("\naddress valid.\n");
       f->eax = filesys_open(file);
 
-      //checking if file contents are NULL or not
-      if (file == NULL)
+      if(filesys_open(file) == true)
         {
-          printf("\nFile does not exist in the root directory\n");
-          f -> eax = false;
+          printf("\nfile: %s opened successfully.\n", file);
+          break;
         }
-      else
-        { 
-          printf("\nFile exists in the root directory, proceeding with the open system call\n");
-          f -> eax = false;
-        }
-
-        int a = f->eax;  
-
-        printf("\nfile: %s opened successfully.\n", file);
-      
-      break;
+      if(filesys_open(file) == false)
+      {
+        printf("\nfile has not been opened, error occured\n");
+        f -> eax = false;
+        break;
+      }
+       
     }
 
     //included SYS_EXIT in order to exit after system calls are done executing
@@ -157,6 +166,6 @@ syscall_handler (struct intr_frame *f )
 
   
 
-  printf("\nsystem call\n");
+  printf("\n\nsystem call\n\n");
   
 }

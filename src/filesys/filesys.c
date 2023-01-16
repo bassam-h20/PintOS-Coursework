@@ -71,6 +71,10 @@ filesys_open (const char *name)
 
   if (dir != NULL)
     dir_lookup (dir, name, &inode);
+    if (dir_lookup(dir, name, &inode) == false)
+    {
+      printf("\nthe file does not exist in the directory.\n");
+    }
   dir_close (dir);
 
   return file_open (inode);
