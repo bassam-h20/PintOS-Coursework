@@ -101,7 +101,7 @@ syscall_handler (struct intr_frame *f )
       }
       
 
-      f->eax = filesys_create(file, initial_size) ;
+      
 
 
       //if statemenets check the bool result of the functions in filesys.c, if returned false
@@ -117,6 +117,8 @@ syscall_handler (struct intr_frame *f )
         f -> eax = false;
         break;
       }
+
+      f->eax = filesys_create(file, initial_size) ;
       
         
     }
