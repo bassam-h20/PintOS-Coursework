@@ -70,7 +70,7 @@ syscall_handler (struct intr_frame *f )
       { 
         //return value (false in this case) stored in eax register
         f -> eax = false;
-        printf("\nError occured, pointer address invalid or file name is null\n");
+        printf("\nError occured in SYS_REMOVE, pointer address invalid or file name is null\n");
         break;
       }
 
@@ -113,7 +113,7 @@ syscall_handler (struct intr_frame *f )
       }
       if(filesys_create(file, initial_size) == false)
       {
-        printf("\nError occured.\nfile either already exists, or internal memory allocation failed\n");
+        printf("\nError occured in SYS_CREATE.\nfile either already exists, or internal memory allocation failed\n");
         f -> eax = false;
         break;
       }
@@ -137,7 +137,7 @@ syscall_handler (struct intr_frame *f )
       if(!is_user_vaddr((const void*)f -> esp + 1) || file == NULL || !pagedir_get_page(thread_current()->pagedir, file))
       {
         f -> eax = false;
-        printf("\nError occured, pointer address invalid or file name is null\n");
+        printf("\nError occured in SYS_OPEN, pointer address invalid or file name is null\n");
         break;
       }
 
@@ -165,6 +165,7 @@ syscall_handler (struct intr_frame *f )
     { 
       printf("\nSYS EXIT\n");
       thread_exit();
+      break;
     }
   
 
