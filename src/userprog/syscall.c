@@ -27,6 +27,8 @@ bool remove (const char *file)
   bool result = filesys_remove(file);
   printf("\nfile name  = '%s'\n", file);
 
+  //if statemenets check the bool result of the functions in filesys.c, if returned false
+  //  and return an error message
   //printing a message depending on the bool result returned from filesys_remove()
   if(result == true)
   {
@@ -101,15 +103,17 @@ syscall_handler (struct intr_frame *f )
 
       f->eax = filesys_create(file, initial_size) ;
 
+
+      //if statemenets check the bool result of the functions in filesys.c, if returned false
+      //  and return an error message
       if (filesys_create(file, initial_size) == true)
       {
         printf("\nfile: '%s' created successfully\n", file);
-        f -> eax = false;
         break;
       }
       if(filesys_create(file, initial_size) == false)
       {
-        printf("\nError occured file either already exists, or internal memory allocation failed\n");
+        printf("\nError occured.\nfile either already exists, or internal memory allocation failed\n");
         f -> eax = false;
         break;
       }
@@ -140,6 +144,8 @@ syscall_handler (struct intr_frame *f )
       printf("\naddress valid.\n");
       f->eax = filesys_open(file);
 
+      //if statemenets check the bool result of the functions in filesys.c, if returned false
+      //  and return an error message
       if(filesys_open(file) == true)
         {
           printf("\nfile: %s opened successfully.\n", file);
