@@ -48,7 +48,7 @@
     }
     ```
 
-## System Calls (focused on `remove` system call)
+## System Calls
 * Three system calls were implemented in total: `create`, `open` and `remove`
 * I only implemented the `remove` system call, found in the `src/filesys/filesys.c` and `src/filesys/directory/c`
    * In `filesys.c`:
