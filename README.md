@@ -51,6 +51,20 @@
 ## System Calls (focused on `remove` system call)
 * Three system calls were implemented in total: `create`, `open` and `remove`
 * I only implemented the `remove` system call, found in the `src/filesys/filesys.c` and `src/filesys/directory/c`
+   * In `filesys.c`:
+     ```c
+     bool
+     filesys_remove (const char *name) { 
+       struct dir *dir = dir_open_root ();
+       bool success = dir != NULL && dir_remove (dir, name);
+       dir_close (dir); 
+       printf("\nfilesys.c: return value: %d\n", success);
+       if(success == 0){
+         printf("filesys.c: Removal failed");
+       }
+       return success;
+     }
+     ```
 * The main objective of the `remove` system call is to remove a file from a directory in the system
 
 #### Exploitation of `remove` system call
