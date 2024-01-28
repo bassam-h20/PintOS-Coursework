@@ -68,5 +68,5 @@
 * The main objective of the `remove` system call is to remove a file from a directory in the system
 
 #### Exploitation of `remove` system call
-* Was done using memory exploitation with shellcode which is implemented in `src/examples/rm_shellcode.c`
+* Was completed with memory exploitation using shellcode which is implemented in `src/examples/rm_shellcode.c`
 
