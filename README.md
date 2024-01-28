@@ -1,7 +1,7 @@
 # PintOS
 #### This is a variant of the Pintos Operating System for use as part of Operating Systems module at the University of the West of England (UWE).
 ---
-#### Implementations done in this project to PintOS operating system in Linux Environment included:
+#### Main tasks in this project in PintOS operating system set in a Linux Environment, included:
 - Tokenistaion of user argument input from terminal
 - Stack management and argument alignment
 - Implementation and integration of system calls
